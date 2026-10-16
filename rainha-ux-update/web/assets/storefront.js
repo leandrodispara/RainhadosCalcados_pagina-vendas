@@ -1,164 +1,127 @@
 'use strict';
-let catalog=[],department='all',carouselTimer=null;
-const mainBanner=document.getElementById('main-banner');
-const promotionBanner=document.getElementById('promotion');
-mainBanner.classList.add('rainha-highlight-slot');
-promotionBanner.classList.add('rainha-promotion-slot');
-const mainFallback=mainBanner.innerHTML;
-const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const node=(tag,cls,text)=>{const item=document.createElement(tag);if(cls)item.className=cls;if(text!==undefined)item.textContent=text;return item;};
-const imagesOf=product=>Array.isArray(product.images)&&product.images.length?product.images:(product.image?[product.image]:[]);
-const departmentOf=product=>{
- const audience=product.audience==='Masculino'?'Masculino':'Feminino';
- if(product.category==='Calçados')return audience==='Masculino'?'calcados-masculinos':'calcados-femininos';
- return audience==='Masculino'?'perfumes-masculinos':'perfumes-femininos';
-};
-const groups=[
- {key:'calcados-femininos',title:'Calçados femininos',description:'Modelos para acompanhar o seu estilo.',class:'feminine',category:'Calçados',audience:'Feminino'},
- {key:'calcados-masculinos',title:'Calçados masculinos',description:'Escolha cor e numeração no detalhe do produto.',class:'masculine',category:'Calçados',audience:'Masculino'},
- {key:'perfumes-femininos',title:'Perfumes femininos',description:'Sua essência, no tamanho que combina com você.',class:'feminine',category:'Perfumes',audience:'Feminino'},
- {key:'perfumes-masculinos',title:'Perfumes masculinos',description:'Encontre sua fragrância e veja as opções disponíveis.',class:'masculine',category:'Perfumes',audience:'Masculino'}
-];
+
+let catalog=[];
+let department='all';
+let carouselTimer=null;
+
+const node=(tag,className,text)=>{const item=document.createElement(tag);if(className)item.className=className;if(text!==undefined)item.textContent=text;return item;};
+const imagesOf=product=>Array.isArray(product?.images)&&product.images.length?product.images:(product?.image?[product.image]:[]);
+const money=value=>typeof value==='number'&&Number.isFinite(value)?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value):'Consulte o valor';
+const audienceOf=product=>product.audience==='Masculino'?'Masculino':'Feminino';
+const kindOf=product=>product.category==='Perfumes'?'Perfumes':`Calçados ${audienceOf(product).toLowerCase()}`;
+const productMatches=(product,filter)=>filter==='all'||(filter==='feminino'&&audienceOf(product)==='Feminino')||(filter==='masculino'&&audienceOf(product)==='Masculino')||(filter==='perfumes'&&product.category==='Perfumes');
 
 function productCard(product){
- const card=node('article','product product-card');
- const link=node('a','product-link');link.href='/produto.html?id='+encodeURIComponent(product.id);link.setAttribute('aria-label','Ver detalhes de '+product.name);
- const photo=node('div','product-photo');const cover=imagesOf(product)[0];
- if(cover){const image=node('img');image.src=cover;image.alt=product.name;image.loading='lazy';photo.append(image);}
- else photo.append(node('div','no-photo','Consulte fotos com a loja'));
- const kind=product.category==='Perfumes'?'Perfume '+(product.audience||'').toLowerCase():'Calçados '+(product.audience||'').toLowerCase();
- link.append(photo,node('p','category',kind),node('h3','',product.name),node('span','details-link','Ver detalhes →'));
- card.append(link);return card;
+  const card=node('article','editorial-product-card');
+  const link=node('a','editorial-product-link');
+  link.href='/produto.html?id='+encodeURIComponent(product.id);
+  link.setAttribute('aria-label','Ver '+product.name);
+  const media=node('div','editorial-product-media');
+  const cover=imagesOf(product)[0];
+  if(cover){const image=node('img');image.src=cover;image.alt=product.name;image.loading='lazy';media.append(image);}else media.append(node('div','editorial-no-photo','Consulte fotos com a loja'));
+  media.append(node('span','editorial-product-tag',kindOf(product)));
+  const details=node('div','editorial-product-details');
+  const heading=node('div','editorial-product-heading');heading.append(node('h3','',product.name),node('strong','',money(product.price)));
+  details.append(heading);
+  if(product.description)details.append(node('p','',product.description));
+  link.append(media,details);card.append(link);return card;
 }
 
-function render(){
- const root=document.getElementById('products');root.replaceChildren();
- const query=normalize(document.getElementById('query').value.trim());let count=0;
- for(const group of groups){
-  if(department!=='all'&&department!==group.key)continue;
-  const items=catalog.filter(product=>departmentOf(product)===group.key&&normalize(product.name+' '+product.brand+' '+product.description).includes(query));
-  count+=items.length;
-  if(!items.length&&department==='all')continue;
-  const section=node('section','product-section');section.id='categoria-'+group.key;
-  const heading=node('div','category-band '+group.class);
-  heading.append(node('p','eyebrow','Rainha dos Calçados'),node('h2','',group.title),node('p','',group.description));section.append(heading);
-  const grid=node('div','products');
-  if(items.length)items.forEach(product=>grid.append(productCard(product)));
-  else grid.append(node('p','empty','Estamos preparando esta seleção. Fale com a loja pelo WhatsApp.'));
-  section.append(grid);root.append(section);
- }
- document.getElementById('count').textContent=count+' produto(s)';
- if(!root.children.length)root.append(node('p','empty',query?'Nenhum produto encontrado. Experimente outra busca.':'Estamos preparando novos produtos para a vitrine. Fale com a loja pelo WhatsApp.'));
+function renderProducts(){
+  const root=document.getElementById('products');if(!root)return;
+  root.replaceChildren();
+  const items=catalog.filter(product=>productMatches(product,department));
+  document.getElementById('count').textContent=items.length?`${items.length} ${items.length===1?'produto selecionado':'produtos selecionados'}`:'';
+  if(!items.length){root.append(node('p','editorial-empty','Estamos preparando esta seleção. Fale com a Rainha pelo WhatsApp.'));return;}
+  items.forEach(product=>root.append(productCard(product)));
 }
 
-function bannerContent(banner){
- const image=node('img');
- image.src=banner.image;
- image.alt=banner.title||'Destaque da Rainha dos Calçados';
- image.loading='eager';
- if(!banner.link)return image;
- const link=node('a','banner-link');
- link.href=banner.link;link.setAttribute('aria-label',banner.title||'Abrir destaque');link.append(image);
- return link;
+function setDepartment(next,{scroll=true}={}){
+  department=next;
+  document.querySelectorAll('[data-department]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.department===next)));
+  renderProducts();
+  if(scroll)document.getElementById('catalogo')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function heroCopy(){
+  const copy=node('div','editorial-hero-copy');
+  copy.append(node('p','editorial-eyebrow','✦ Seu estilo merece reinar'));
+  const title=node('h1');title.append('Presença que começa ',node('em','', 'nos detalhes.'));copy.append(title);
+  copy.append(node('p','editorial-lead','Calçados escolhidos para transformar o seu caminhar e perfumes árabes que deixam uma assinatura inesquecível.'));
+  const actions=node('div','editorial-actions');
+  const catalogLink=node('a','editorial-button gold','Descobrir novidades ');catalogLink.href='#catalogo';catalogLink.append(node('span','', '→'));
+  const whatsapp=node('a','editorial-button ghost','◯  Comprar pelo WhatsApp');whatsapp.href='https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento.';whatsapp.target='_blank';whatsapp.rel='noopener';
+  actions.append(catalogLink,whatsapp);copy.append(actions);return copy;
+}
+
+function bannerLink(banner,image){
+  if(!banner.link)return image;
+  const link=node('a','editorial-banner-link');link.href=banner.link;link.setAttribute('aria-label',banner.title||'Abrir destaque');link.append(image);return link;
+}
+
+function renderHighlights(area,highlights){
+  const entries=(Array.isArray(highlights)?highlights:[]).filter(item=>item?.image);
+  if(!entries.length)return;
+  if(carouselTimer)window.clearInterval(carouselTimer);
+  area.classList.add('has-highlights');area.replaceChildren();
+  const slides=node('div','editorial-highlight-slides');
+  const list=[];
+  entries.forEach((banner,index)=>{
+    const slide=node('article','editorial-highlight-slide');slide.hidden=index!==0;
+    const image=node('img');image.src=banner.image;image.alt=banner.title||'Destaque Rainha dos Calçados';image.loading=index?'lazy':'eager';
+    slide.append(bannerLink(banner,image));slides.append(slide);list.push(slide);
+  });
+  const shade=node('div','editorial-hero-shade');
+  area.append(slides,shade,heroCopy());
+  if(entries.length>1){
+    const controls=node('div','editorial-highlight-controls');
+    const previous=node('button','editorial-highlight-arrow','‹');previous.type='button';previous.setAttribute('aria-label','Destaque anterior');
+    const next=node('button','editorial-highlight-arrow','›');next.type='button';next.setAttribute('aria-label','Próximo destaque');
+    const dots=node('div','editorial-highlight-dots');const buttons=[];
+    const show=position=>{const index=(position+list.length)%list.length;list.forEach((slide,order)=>slide.hidden=order!==index);buttons.forEach((button,order)=>button.setAttribute('aria-current',String(order===index)));return index;};
+    let active=0;
+    entries.forEach((banner,index)=>{const button=node('button','editorial-highlight-dot');button.type='button';button.setAttribute('aria-label',`Mostrar destaque ${index+1}`);button.setAttribute('aria-current',String(index===0));button.onclick=()=>{active=show(index);};buttons.push(button);dots.append(button);});
+    previous.onclick=()=>{active=show(active-1);};next.onclick=()=>{active=show(active+1);};
+    controls.append(previous,next);area.append(controls,dots);
+    carouselTimer=window.setInterval(()=>{active=show(active+1);},6500);
+    area.addEventListener('mouseenter',()=>window.clearInterval(carouselTimer),{once:true});
+  }
 }
 
 function renderPromotion(area,banner){
- if(!banner?.image){
-  area.replaceChildren();area.classList.remove('has-banner');area.hidden=true;return false;
- }
- const frame=node('div','promotion-frame');
- const heading=node('div','promotion-heading');
- heading.append(node('p','promotion-kicker','Promoções da Rainha'),node('h2','promotion-title',banner.title||'Ofertas da Rainha'));
- const media=node('div','promotion-media');
- media.append(bannerContent(banner));frame.append(heading,media);
- area.replaceChildren(frame);
- area.classList.add('has-banner');area.hidden=false;
- return true;
+  if(!area)return;
+  if(!banner?.image){area.hidden=true;area.replaceChildren();return;}
+  const frame=node('div','editorial-promotion-frame');
+  const heading=node('div','editorial-promotion-heading');heading.append(node('p','editorial-kicker','PROMOÇÃO DA SEMANA'),node('h2','',banner.title||'Uma seleção especial para você.'));
+  const media=node('div','editorial-promotion-media');
+  const image=node('img');image.src=banner.image;image.alt=banner.title||'Promoção da Rainha dos Calçados';image.loading='lazy';
+  media.append(bannerLink(banner,image));frame.append(heading,media);area.replaceChildren(frame);area.hidden=false;
 }
 
-function renderHighlights(area,source){
- if(carouselTimer){clearInterval(carouselTimer);carouselTimer=null;}
- const items=(Array.isArray(source)?source:[]).filter(item=>item?.image);
- if(!items.length){
-  area.classList.remove('has-highlights');
-  area.innerHTML=mainFallback;
-  area.hidden=false;
-  return false;
- }
-
- let current=0;
- const carousel=node('div','highlight-carousel');
- carousel.setAttribute('role','region');
- carousel.setAttribute('aria-roledescription','carrossel');
- carousel.setAttribute('aria-label','Destaques da loja');
- const slides=node('div','highlight-slides');
- const slideItems=items.map((item,index)=>{
-  const slide=node('article','highlight-slide');
-  slide.setAttribute('aria-label','Destaque '+(index+1)+' de '+items.length);
-  slide.append(bannerContent(item));slides.append(slide);return slide;
- });
- carousel.append(slides);
-
- const show=index=>{
-  current=(index+items.length)%items.length;
-  slideItems.forEach((slide,position)=>{
-   const active=position===current;
-   slide.hidden=!active;slide.setAttribute('aria-hidden',String(!active));
-  });
-  carousel.querySelectorAll('[data-highlight-dot]').forEach((dot,position)=>dot.setAttribute('aria-current',String(position===current)));
- };
-
- const stop=()=>{if(carouselTimer){clearInterval(carouselTimer);carouselTimer=null;}};
- const start=()=>{
-  if(items.length<2||window.matchMedia('(prefers-reduced-motion: reduce)').matches||carouselTimer)return;
-  carouselTimer=window.setInterval(()=>show(current+1),6000);
- };
-
- if(items.length>1){
-  const controls=node('div','highlight-controls');
-  const previous=node('button','highlight-arrow highlight-previous','‹');
-  previous.type='button';previous.setAttribute('aria-label','Mostrar destaque anterior');previous.onclick=()=>{stop();show(current-1);start();};
-  const next=node('button','highlight-arrow highlight-next','›');
-  next.type='button';next.setAttribute('aria-label','Mostrar próximo destaque');next.onclick=()=>{stop();show(current+1);start();};
-  const dots=node('div','highlight-dots');
-  items.forEach((_,index)=>{
-   const dot=node('button','highlight-dot');
-   dot.type='button';dot.dataset.highlightDot=String(index);dot.setAttribute('aria-label','Mostrar destaque '+(index+1));
-   dot.onclick=()=>{stop();show(index);start();};dots.append(dot);
-  });
-  controls.append(previous,dots,next);carousel.append(controls);
-  carousel.addEventListener('pointerenter',stop);
-  carousel.addEventListener('pointerleave',start);
-  carousel.addEventListener('focusin',stop);
-  carousel.addEventListener('focusout',()=>setTimeout(()=>{if(!carousel.contains(document.activeElement))start();},0));
- }
-
- area.replaceChildren(carousel);
- area.classList.add('has-highlights');area.hidden=false;
- show(0);start();
- return true;
+function setCollectionImage(id,product){
+  const panel=document.getElementById(id);if(!panel)return;
+  const image=imagesOf(product)[0];
+  if(image)panel.style.setProperty('--collection-image',`url("${image}")`);
 }
 
-function setDepartment(next){
- department=next;
- document.querySelectorAll('button[data-department]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.department===department)));
- render();
+function renderEditorialBlocks(){
+  const female=catalog.find(product=>product.category==='Calçados'&&audienceOf(product)==='Feminino')||catalog.find(product=>audienceOf(product)==='Feminino');
+  const male=catalog.find(product=>product.category==='Calçados'&&audienceOf(product)==='Masculino')||catalog.find(product=>audienceOf(product)==='Masculino');
+  if(female)setCollectionImage('collection-feminine',female);
+  if(male)setCollectionImage('collection-masculine',male);
+  const perfume=catalog.find(product=>product.category==='Perfumes'&&imagesOf(product).length);
+  if(perfume){const image=document.getElementById('perfume-story-image');image.src=imagesOf(perfume)[0];image.alt=perfume.name;}
 }
 
-document.querySelectorAll('[data-department]').forEach(element=>element.onclick=()=>setDepartment(element.dataset.department));
-document.getElementById('search').onsubmit=event=>{event.preventDefault();render();document.getElementById('catalogo').scrollIntoView({block:'start'});};
-document.getElementById('query').oninput=render;
+document.querySelectorAll('[data-department]').forEach(element=>element.addEventListener('click',event=>{const next=element.dataset.department;if(!next)return;event.preventDefault();setDepartment(next);}));
 
 fetch('/api/catalog',{cache:'no-store'}).then(async response=>{
- if(!response.ok)throw Error();
- const data=await response.json();
- catalog=Array.isArray(data.products)?data.products:[];
- render();
- const banners=data.banners||{};
- const highlights=Array.isArray(banners.highlights)?banners.highlights:(banners.main?[banners.main]:[]);
- renderHighlights(mainBanner,highlights);
- renderPromotion(promotionBanner,banners.promotion||data.banner||null);
+  if(!response.ok)throw Error('Não foi possível carregar a vitrine.');
+  const data=await response.json();catalog=Array.isArray(data.products)?data.products:[];
+  const banners=data.banners||{};
+  renderHighlights(document.getElementById('main-banner'),banners.highlights||[banners.main].filter(Boolean));
+  renderPromotion(document.getElementById('promotion'),banners.promotion||data.banner);
+  renderProducts();renderEditorialBlocks();
 }).catch(()=>{
- document.getElementById('products').replaceChildren(node('p','empty','Não foi possível carregar a vitrine. Fale com a loja pelo WhatsApp ou tente novamente.'));
- document.getElementById('count').textContent='';
+  const root=document.getElementById('products');if(root){root.replaceChildren(node('p','editorial-empty','Não foi possível carregar a vitrine agora. Fale com a Rainha pelo WhatsApp.'));}document.getElementById('count').textContent='';
 });
