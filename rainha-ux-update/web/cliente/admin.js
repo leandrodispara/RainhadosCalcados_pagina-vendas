@@ -127,7 +127,7 @@ function renderHighlights(){
    const edit=el('button','btn secondary','Editar');edit.type='button';
    edit.onclick=()=>{if(canLeave())openHighlight(item.id);};
    const remove=el('button','remove','Excluir');remove.type='button';
-   remove.onclick=()=>removeHighlight(item.id);
+   remove.onclick=()=>{if(canLeave())removeHighlight(item.id);};
    actions.append(edit,remove);card.append(preview,details,actions);root.append(card);
   });
  }
