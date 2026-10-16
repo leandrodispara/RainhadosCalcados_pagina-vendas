@@ -1,20 +1,44 @@
-/* Vitrine em duas etapas: valores e compra somente na página do produto. */
-.main-banner{margin-top:0}
-.main-banner.has-highlights{position:relative;width:100%;aspect-ratio:16/5;overflow:hidden;border-radius:5px;background:var(--cream)}
-.highlight-carousel,.highlight-slides,.highlight-slide{width:100%;height:100%}
-.highlight-slide>a{display:block;width:100%;height:100%}
-.highlight-slide img{display:block;width:100%;height:100%;object-fit:cover}
-.highlight-controls{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;pointer-events:none;padding:0 12px}
-.highlight-arrow{width:38px;height:38px;border:0;border-radius:50%;background:#fffdf0e8;color:var(--dark);font-size:31px;line-height:30px;box-shadow:0 3px 12px #30292333;cursor:pointer;pointer-events:auto}
-.highlight-arrow:hover{background:#fff}
-.highlight-arrow:focus-visible,.highlight-dot:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.highlight-dots{position:absolute;left:50%;bottom:12px;display:flex;gap:7px;transform:translateX(-50%);pointer-events:auto}
-.highlight-dot{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:#ffffff99;box-shadow:0 1px 4px #30292366;cursor:pointer}
-.highlight-dot[aria-current=true]{width:24px;border-radius:8px;background:#fff}
-.store-banner{width:100%;overflow:hidden;border-radius:5px;background:var(--cream)}
-.promotion{position:relative;clear:both;isolation:isolate;margin-top:24px;border:0}
-.promotion a{display:block;width:100%}
-.promotion img{display:block;width:auto;height:auto;max-width:100%;max-height:460px;margin:0 auto;object-fit:contain}
+/* Layout dos banners: destaques e promoção são blocos independentes no fluxo da página. */
+:root{--rainha-banner-gap:clamp(22px,2.5vw,36px);--rainha-banner-radius:12px}
+main.wrap>#main-banner.rainha-highlight-slot,
+main.wrap>#promotion.rainha-promotion-slot{display:block!important;float:none!important;clear:both!important;width:100%!important;max-width:none!important;box-sizing:border-box!important}
+main.wrap>#main-banner.rainha-highlight-slot{position:relative!important;inset:auto!important;z-index:0!important;margin:0 0 var(--rainha-banner-gap)!important}
+main.wrap>#main-banner.rainha-highlight-slot.has-highlights{height:auto!important;min-height:0!important;aspect-ratio:16/5;padding:0!important;overflow:hidden!important;border:1px solid var(--line,#e8dfd2)!important;border-radius:var(--rainha-banner-radius)!important;background:var(--cream,#f8f4eb)!important;box-shadow:0 10px 30px #30292312}
+#main-banner.rainha-highlight-slot .highlight-carousel{position:relative!important;display:block!important;width:100%!important;height:100%!important;isolation:isolate}
+#main-banner.rainha-highlight-slot .highlight-slides{position:relative!important;display:block!important;width:100%!important;height:100%!important}
+#main-banner.rainha-highlight-slot .highlight-slide{display:block;width:100%;height:100%;padding:0!important;margin:0!important}
+#main-banner.rainha-highlight-slot .highlight-slide[hidden]{display:none!important}
+#main-banner.rainha-highlight-slot .highlight-slide>a,
+#main-banner.rainha-highlight-slot .highlight-slide>img{position:static!important;display:block!important;width:100%!important;height:100%!important;padding:0!important;margin:0!important}
+#main-banner.rainha-highlight-slot .highlight-slide img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important}
+#main-banner.rainha-highlight-slot .highlight-controls{position:absolute!important;inset:0!important;z-index:2;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 14px!important;pointer-events:none}
+#main-banner.rainha-highlight-slot .highlight-arrow{appearance:none;width:40px!important;height:40px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#fffdf0e8!important;color:var(--dark,#302923)!important;font:32px/36px Arial,sans-serif!important;box-shadow:0 4px 14px #30292340!important;cursor:pointer;pointer-events:auto}
+#main-banner.rainha-highlight-slot .highlight-arrow:hover{background:#fff!important;transform:translateY(-1px)}
+#main-banner.rainha-highlight-slot .highlight-arrow:focus-visible,
+#main-banner.rainha-highlight-slot .highlight-dot:focus-visible{outline:3px solid var(--gold,#a87720)!important;outline-offset:3px}
+#main-banner.rainha-highlight-slot .highlight-dots{position:absolute!important;left:50%!important;bottom:13px!important;z-index:3;display:flex!important;gap:7px!important;transform:translateX(-50%)!important;pointer-events:auto}
+#main-banner.rainha-highlight-slot .highlight-dot{appearance:none;width:9px!important;height:9px!important;padding:0!important;border:0!important;border-radius:99px!important;background:#ffffffa8!important;box-shadow:0 1px 5px #30292366!important;cursor:pointer}
+#main-banner.rainha-highlight-slot .highlight-dot[aria-current=true]{width:26px!important;background:#fff!important}
+main.wrap>#promotion.rainha-promotion-slot{position:relative!important;inset:auto!important;z-index:0!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important;margin:0 0 var(--rainha-banner-gap)!important;padding:0!important;overflow:visible!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+main.wrap>#promotion.rainha-promotion-slot[hidden]{display:none!important}
+#promotion.rainha-promotion-slot .promotion-frame{display:block!important;overflow:hidden!important;border:1px solid var(--line,#e8dfd2)!important;border-radius:var(--rainha-banner-radius)!important;background:#fffdfa!important;box-shadow:0 8px 24px #3029230d}
+#promotion.rainha-promotion-slot .promotion-heading{display:flex!important;flex-wrap:wrap!important;align-items:baseline!important;gap:5px 12px!important;padding:17px 20px 14px!important;border-bottom:1px solid var(--line,#e8dfd2)!important;background:linear-gradient(90deg,#fffaf0,#fffdfa)!important}
+#promotion.rainha-promotion-slot .promotion-kicker{margin:0!important;color:#8b651c!important;font-size:11px!important;font-weight:800!important;letter-spacing:1.3px!important;text-transform:uppercase!important}
+#promotion.rainha-promotion-slot .promotion-title{margin:0!important;color:var(--dark,#302923)!important;font-size:clamp(18px,2.2vw,25px)!important;line-height:1.2!important;letter-spacing:-.3px!important}
+#promotion.rainha-promotion-slot .promotion-media,
+#promotion.rainha-promotion-slot .promotion-media>a{position:static!important;display:block!important;width:100%!important;height:auto!important;padding:0!important;margin:0!important}
+#promotion.rainha-promotion-slot .promotion-media img{position:static!important;display:block!important;width:100%!important;height:auto!important;max-width:100%!important;max-height:none!important;margin:0!important;object-fit:contain!important;vertical-align:bottom!important}
+#banner-form[data-banner-area="promotion"] .banner-preview{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;background:var(--cream,#f8f4eb)!important}
+@media(max-width:650px){
+ main.wrap>#main-banner.rainha-highlight-slot{margin-bottom:20px!important}
+ main.wrap>#main-banner.rainha-highlight-slot.has-highlights{aspect-ratio:16/6;border-radius:8px!important}
+ #main-banner.rainha-highlight-slot .highlight-controls{padding:0 9px!important}
+ #main-banner.rainha-highlight-slot .highlight-arrow{width:35px!important;height:35px!important;font-size:28px!important;line-height:32px!important}
+ #main-banner.rainha-highlight-slot .highlight-dots{bottom:9px!important}
+ main.wrap>#promotion.rainha-promotion-slot{margin-bottom:24px!important}
+ #promotion.rainha-promotion-slot .promotion-frame{border-radius:8px!important}
+ #promotion.rainha-promotion-slot .promotion-heading{padding:14px 15px 12px!important}
+}
 .product-card .product-link{display:block;height:100%;text-decoration:none}
 .product-card .product-photo{transition:transform .2s ease,box-shadow .2s ease}
 .product-card .product-link:hover .product-photo{transform:translateY(-2px);box-shadow:0 10px 22px #3029231a}
