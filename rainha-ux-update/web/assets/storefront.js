@@ -1,6 +1,9 @@
 'use strict';
 let catalog=[],department='all',carouselTimer=null;
 const mainBanner=document.getElementById('main-banner');
+const promotionBanner=document.getElementById('promotion');
+mainBanner.classList.add('rainha-highlight-slot');
+promotionBanner.classList.add('rainha-promotion-slot');
 const mainFallback=mainBanner.innerHTML;
 const normalize=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const node=(tag,cls,text)=>{const item=document.createElement(tag);if(cls)item.className=cls;if(text!==undefined)item.textContent=text;return item;};
@@ -63,7 +66,12 @@ function renderPromotion(area,banner){
  if(!banner?.image){
   area.replaceChildren();area.classList.remove('has-banner');area.hidden=true;return false;
  }
- area.replaceChildren(bannerContent(banner));
+ const frame=node('div','promotion-frame');
+ const heading=node('div','promotion-heading');
+ heading.append(node('p','promotion-kicker','Promoções da Rainha'),node('h2','promotion-title',banner.title||'Ofertas da Rainha'));
+ const media=node('div','promotion-media');
+ media.append(bannerContent(banner));frame.append(heading,media);
+ area.replaceChildren(frame);
  area.classList.add('has-banner');area.hidden=false;
  return true;
 }
@@ -149,7 +157,7 @@ fetch('/api/catalog',{cache:'no-store'}).then(async response=>{
  const banners=data.banners||{};
  const highlights=Array.isArray(banners.highlights)?banners.highlights:(banners.main?[banners.main]:[]);
  renderHighlights(mainBanner,highlights);
- renderPromotion(document.getElementById('promotion'),banners.promotion||data.banner||null);
+ renderPromotion(promotionBanner,banners.promotion||data.banner||null);
 }).catch(()=>{
  document.getElementById('products').replaceChildren(node('p','empty','Não foi possível carregar a vitrine. Fale com a loja pelo WhatsApp ou tente novamente.'));
  document.getElementById('count').textContent='';
