@@ -84,7 +84,10 @@ function renderHighlights(area,highlights){
     previous.onclick=()=>{active=show(active-1);};next.onclick=()=>{active=show(active+1);};
     controls.append(previous,next);area.append(controls,dots);
     carouselTimer=window.setInterval(()=>{active=show(active+1);},6500);
-    area.addEventListener('mouseenter',()=>window.clearInterval(carouselTimer),{once:true});
+    const stop=()=>{if(carouselTimer){window.clearInterval(carouselTimer);carouselTimer=null;}};
+    const start=()=>{if(!carouselTimer)carouselTimer=window.setInterval(()=>{active=show(active+1);},6500);};
+    area.addEventListener('mouseenter',stop);area.addEventListener('mouseleave',start);
+    area.addEventListener('focusin',stop);area.addEventListener('focusout',start);
   }
 }
 
