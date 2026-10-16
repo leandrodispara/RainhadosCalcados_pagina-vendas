@@ -146,7 +146,7 @@ async function removeHighlight(id){
 }
 
 async function promoteHighlight(id){
-  if(busy)return;
+  if(busy||!canLeave())return;
   const highlight=state.banners.highlights.find(item=>item.id===id);
   if(!highlight?.image){message('Este destaque não tem imagem para usar como promoção.',true);return;}
   if(!confirm('Usar este destaque como a promoção fixa? A promoção atual será substituída e este item sairá da lista de destaques.'))return;
