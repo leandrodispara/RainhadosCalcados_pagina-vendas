@@ -1,15 +1,15 @@
 # Atualização de banners · Rainha dos Calçados
 
-Esta versão separa definitivamente os dois espaços da página inicial:
+Esta versão corrige o fluxo visual da página inicial e separa definitivamente os dois espaços:
 
-1. **Destaques da página inicial**: carrossel com até **3 banners removíveis**. O antigo banner principal é migrado automaticamente para o primeiro destaque.
-2. **Banner fixo de promoções**: continua independente, abaixo dos destaques, sem sobreposição e com a imagem exibida inteira.
+1. **Destaques da página inicial**: carrossel com até **4 banners removíveis**. O antigo banner principal é migrado automaticamente para o primeiro destaque.
+2. **Banner fixo de promoções**: continua independente, abaixo dos destaques, sem sobreposição, em um bloco próprio e com a imagem exibida inteira.
 
 ## O que muda no painel
 
 Em **Banners da página inicial** existem duas abas:
 
-- **Destaques da página inicial**: adicionar, editar, ocultar ou excluir até três banners.
+- **Destaques da página inicial**: adicionar, editar, ocultar ou excluir até quatro banners.
 - **Banner fixo de promoções**: cadastrar um único banner promocional separado.
 
 Os arquivos enviados ao Google Drive continuam sendo usados normalmente. Nenhuma imagem existente é apagada pela atualização.
