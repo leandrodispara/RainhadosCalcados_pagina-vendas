@@ -23,6 +23,11 @@ async function request(path,options={}){
   let result;try{result=await response.json();}catch{throw Error('O serviço de cadastro não respondeu. Confira a instalação no servidor.');}
   if(!response.ok)throw Error(result.error||'Não foi possível concluir.');return result;
 }
+function requireConnection(banner=false){
+  if(connected)return true;
+  message('O catálogo ainda não terminou de carregar. Recarregue a página antes de salvar.',banner);
+  return false;
+}
 
 function normalizeBanners(source,legacy){
   const raw=source&&typeof source==='object'&&!Array.isArray(source)?source:{};
@@ -101,8 +106,9 @@ function renderHighlightList(){
     const edit=el('button','',currentHighlightId===highlight.id?'Editando':'Editar');edit.type='button';edit.onclick=()=>{if(canLeave()){currentHighlightId=highlight.id;loadBannerEditor();}};
     const up=el('button','', '↑');up.type='button';up.title='Mover para cima';up.disabled=index===0;up.onclick=()=>moveHighlight(index,-1);
     const down=el('button','', '↓');down.type='button';down.title='Mover para baixo';down.disabled=index===items.length-1;down.onclick=()=>moveHighlight(index,1);
+    const promote=el('button','', 'Usar como promoção');promote.type='button';promote.onclick=()=>promoteHighlight(highlight.id);
     const remove=el('button','', 'Excluir');remove.type='button';remove.onclick=()=>removeHighlight(highlight.id);
-    actions.append(edit,up,down,remove);card.append(preview,details,actions);root.append(card);
+    actions.append(edit,up,down,promote,remove);card.append(preview,details,actions);root.append(card);
   });
 }
 
@@ -110,7 +116,7 @@ function loadBannerEditor(){
   const isPromotion=bannerArea==='promotion';const value=isPromotion?state.banners.promotion:(currentHighlight()||blankHighlight());
   $('highlight-manager').hidden=isPromotion;
   $('banner-editor-title').textContent=isPromotion?'Promoção fixa':' '+(currentHighlightId?'Editar destaque':'Novo destaque');
-  $('banner-description').textContent=isPromotion?'Este banner fica logo abaixo do carrossel. Ele é exibido inteiro, sem corte e sem sobreposição. Você pode usar a proporção que precisar.':'Use uma imagem horizontal de aproximadamente 1600 × 650 px. O texto é opcional e serve para identificar o item no painel.';
+  $('banner-description').textContent=isPromotion?'Este banner fica logo depois das boas-vindas, antes dos destaques. Ele é exibido inteiro, sem corte e sem texto por cima.':'Os destaques aparecem depois da promoção. Use uma imagem horizontal; o título é só para identificar o item no painel.';
   $('banner-photo-help').textContent=isPromotion?'A promoção será mostrada inteira, sem corte. Até 10 MB; a otimização é automática.':'Para destaques, prefira imagem horizontal. Até 10 MB; a otimização é automática.';
   $('promotion-preview-note').hidden=!isPromotion;
   $('banner-title').value=value.title||'';$('banner-link').value=value.link||'';$('banner-active').checked=isPromotion?value.active:(currentHighlightId?value.active:true);bannerImage=value.image||'';showImage('banner-preview',bannerImage);
@@ -139,6 +145,18 @@ async function removeHighlight(id){
   const next=state.banners.highlights.filter(item=>item.id!==id);if(currentHighlightId===id)currentHighlightId='';await persistHighlights(next,'Destaque removido da home.');loadBannerEditor();
 }
 
+async function promoteHighlight(id){
+  if(busy)return;
+  const highlight=state.banners.highlights.find(item=>item.id===id);
+  if(!highlight?.image){message('Este destaque não tem imagem para usar como promoção.',true);return;}
+  if(!confirm('Usar este destaque como a promoção fixa? A promoção atual será substituída e este item sairá da lista de destaques.'))return;
+  busy++;$('banner-fields').disabled=true;
+  try{
+    adopt(await request('banners/highlights/'+encodeURIComponent(id)+'/promotion',{method:'POST',headers:{'If-Match':String(state.revision)}}));
+    bannerArea='promotion';currentHighlightId='';loadBannerEditor();message('Promoção fixa atualizada. O destaque anterior foi removido da lista.',true);
+  }catch(error){message(error.message,true);}finally{busy--;$('banner-fields').disabled=false;}
+}
+
 function changeTab(next,gender=''){
   tab=next;audience=gender||'Feminino';const banners=tab==='banners';
   document.querySelectorAll('[data-tab]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.tab===tab&&(button.dataset.audience||'')===(banners?'':audience))));
@@ -160,14 +178,14 @@ async function upload(file,kind){
 }
 
 $('photos').onchange=async event=>{
-  const files=[...event.target.files];if(!files.length)return;if(busy){event.target.value='';return;}if(images.length+files.length>8){message('O produto pode ter no máximo 8 fotos.');event.target.value='';return;}
+  const files=[...event.target.files];if(!files.length)return;if(!requireConnection()){event.target.value='';return;}if(busy){event.target.value='';return;}if(images.length+files.length>8){message('O produto pode ter no máximo 8 fotos.');event.target.value='';return;}
   busy++;message('Otimizando e enviando '+files.length+' foto(s)…');let sent=0;
   try{for(const file of files){const result=await upload(file,'product');images.push(result.image);sent++;renderPhotos();}dirty=true;message(sent+' foto(s) pronta(s). Salve o produto para publicar.');}
   catch(error){message((sent?'Algumas fotos foram enviadas. ':'')+error.message);}finally{busy--;event.target.value='';}
 };
 
 $('banner-photo').onchange=async event=>{
-  const file=event.target.files[0];if(!file)return;if(busy){event.target.value='';return;}
+  const file=event.target.files[0];if(!file)return;if(!requireConnection(true)){event.target.value='';return;}if(busy){event.target.value='';return;}
   busy++;message('Otimizando e enviando a imagem…',true);
   try{const result=await upload(file,'banner');bannerImage=result.image;showImage('banner-preview',bannerImage);dirty=true;message('Imagem pronta: '+Math.round(result.size/1024)+' KB. Salve para publicar.',true);}
   catch(error){message(error.message,true);}finally{busy--;event.target.value='';}
@@ -176,7 +194,7 @@ $('banner-photo').onchange=async event=>{
 $('banner-remove').onclick=()=>{if(busy)return;bannerImage='';$('banner-active').checked=false;showImage('banner-preview','');dirty=true;};
 
 $('editor').onsubmit=async event=>{
-  event.preventDefault();if(busy||!connected)return;
+  event.preventDefault();if(busy||!requireConnection())return;
   const variants=[...$('variants').children].map(rowElement=>{const variant={};rowElement.querySelectorAll('[data-field]').forEach(input=>variant[input.dataset.field]=input.dataset.field==='price'?price(input.value):['quantity','ml'].includes(input.dataset.field)?Number(input.value):input.value.trim());return variant;});
   const product={id:current,name:$('name').value.trim(),brand:$('brand').value.trim(),description:$('description').value.trim(),category:tab,audience:$('audience').value,price:price($('price').value),image:images[0]||'',images,active:$('active').checked,variants};
   busy++;$('product-fields').disabled=true;
@@ -185,11 +203,11 @@ $('editor').onsubmit=async event=>{
 };
 
 $('banner-form').onsubmit=async event=>{
-  event.preventDefault();if(busy||!connected)return;
+  event.preventDefault();if(busy||!requireConnection(true))return;
   const value={title:$('banner-title').value.trim(),link:$('banner-link').value.trim(),image:bannerImage,active:$('banner-active').checked};
   if(bannerArea==='promotion'){
     busy++;$('banner-fields').disabled=true;
-    try{adopt(await request('banners/promotion',{method:'PUT',headers:{'Content-Type':'application/json','If-Match':String(state.revision)},body:JSON.stringify(value)}));dirty=false;loadBannerEditor();message(state.banners.promotion.active?'Promoção fixa publicada abaixo dos destaques.':'Promoção salva e ocultada da home.',true);}
+    try{adopt(await request('banners/promotion',{method:'PUT',headers:{'Content-Type':'application/json','If-Match':String(state.revision)},body:JSON.stringify(value)}));dirty=false;loadBannerEditor();message(state.banners.promotion.active?'Promoção fixa publicada logo depois das boas-vindas.':'Promoção salva e ocultada da home.',true);}
     catch(error){message(error.message,true);}finally{busy--;$('banner-fields').disabled=false;}
     return;
   }
@@ -197,7 +215,7 @@ $('banner-form').onsubmit=async event=>{
   const next=[...state.banners.highlights];const index=next.findIndex(item=>item.id===highlight.id);
   if(index>=0)next[index]=highlight;else next.push(highlight);
   if(next.length>4){message('Use no máximo quatro destaques.',true);return;}
-  currentHighlightId=highlight.id;await persistHighlights(next,highlight.active?'Destaque salvo na recepção da loja.':'Destaque salvo como oculto.');loadBannerEditor();
+  currentHighlightId=highlight.id;await persistHighlights(next,highlight.active?'Destaque salvo após a promoção.':'Destaque salvo como oculto.');loadBannerEditor();
 };
 
 $('delete').onclick=async()=>{
@@ -224,7 +242,7 @@ $('import-file').onchange=async event=>{
 };
 
 window.addEventListener('beforeunload',event=>{if(dirty||busy){event.preventDefault();event.returnValue='';}});
-request('catalog').then(data=>{adopt(data);changeTab('Calçados','Feminino');}).catch(error=>{$('connection').textContent=error.message+' Nenhum dado foi salvo no navegador.';});
+request('catalog').then(data=>{adopt(data);changeTab('Calçados','Feminino');}).catch(error=>{connected=false;$('product-fields').disabled=false;$('banner-fields').disabled=false;$('connection').textContent=error.message+' Recarregue a página para tentar novamente; nada foi salvo no navegador.';});
 $('connect-drive').onclick=async()=>{
   if(!canLeave())return;if(location.hostname==='www.calcadosrainha.com.br'){location.href='https://calcadosrainha.com.br/cliente/';return;}
   if(!confirm('Você vai autorizar a aplicação no Google. Para usar a pasta já existente, a permissão solicitada abrange o Drive da conta. Este sistema utiliza apenas a pasta de imagens informada. Continuar?'))return;
