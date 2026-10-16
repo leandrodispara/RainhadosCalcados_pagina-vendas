@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/style.css">
-  <link rel="stylesheet" href="/assets/rainha-ux.css">
+  <link rel="stylesheet" href="/assets/rainha-ux.css?v=20261016-v7">
 </head>
 <body class="rainha-editorial">
-  <div class="editorial-topbar"><span>✦ Atendimento personalizado · Umuarama e região</span><a href="/cliente/">Área do colaborador</a></div>
+  <div class="editorial-topbar"><span>✦ Atendimento personalizado · Umuarama e região</span><a href="/cliente/" target="_blank" rel="noopener">Área do colaborador ↗</a></div>
 
   <header class="editorial-header">
     <a href="/" class="editorial-brand" aria-label="Rainha dos Calçados — início">
@@ -31,9 +31,9 @@
   </header>
 
   <main class="editorial-main">
-    <section id="main-banner" class="editorial-hero" aria-label="Destaques da Rainha dos Calçados">
+    <section class="editorial-hero" aria-label="Boas-vindas à Rainha dos Calçados">
       <div class="editorial-hero-fallback">
-        <img src="/assets/editorial.webp" alt="Seleção de calçados e perfumes Rainha dos Calçados">
+        <div class="editorial-hero-art" aria-hidden="true"></div>
         <div class="editorial-hero-shade"></div>
         <div class="editorial-hero-copy">
           <p class="editorial-eyebrow">✦ Seu estilo merece reinar</p>
@@ -45,6 +45,7 @@
     </section>
 
     <section id="promotion" class="editorial-promotion" aria-label="Promoções da loja" hidden></section>
+    <section id="highlights" class="editorial-highlights" aria-label="Destaques da loja" hidden></section>
 
     <section class="editorial-catalog" id="catalogo" aria-labelledby="catalog-title">
       <div class="editorial-section-heading">
@@ -70,7 +71,7 @@
     </section>
 
     <section class="editorial-perfumes" id="perfumes" aria-labelledby="perfume-heading">
-      <div class="editorial-perfume-photo"><img id="perfume-story-image" src="/assets/editorial.webp" alt="Perfumes árabes selecionados"><span>ESSÊNCIAS SELECIONADAS</span></div>
+      <div class="editorial-perfume-photo"><img id="perfume-story-image" alt="" hidden><span>ESSÊNCIAS SELECIONADAS</span></div>
       <div class="editorial-perfume-copy"><p class="editorial-kicker">PERFUMES ÁRABES</p><h2 id="perfume-heading">Um aroma que fala antes mesmo de você.</h2><p>Descubra fragrâncias intensas, sofisticadas e de alta fixação. Nossa curadoria reúne perfumes femininos, masculinos e compartilháveis para cada personalidade.</p><ul><li>Oud marcante</li><li>Florais raros</li><li>Alta fixação</li></ul><button type="button" class="editorial-button gold" data-department="perfumes">Quero encontrar meu perfume <span>→</span></button></div>
     </section>
 
@@ -91,6 +92,6 @@
     <div class="editorial-copyright">© 2026 Rainha dos Calçados</div>
   </footer>
   <a class="editorial-whatsapp" href="https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento." target="_blank" rel="noopener">◯&nbsp; Posso ajudar?</a>
-  <script src="/assets/storefront.js" defer></script>
+  <script src="/assets/storefront.js?v=20261016-v7" defer></script>
 </body>
 </html>
