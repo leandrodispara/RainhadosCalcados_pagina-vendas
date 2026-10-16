@@ -64,7 +64,7 @@ fi
 printf '%s\n' "$switch_output"
 
 echo "Copiando imagens atuais para o Drive da cliente…"
-if ! migration_output="$("$NODE_BIN" "$BASE/api/migrate-drive.mjs" "$DATA_FILE" "$DRIVE_CONFIG" "$TOKEN_FILE" 2>&1)"; then
+if ! migration_output="$("$NODE_BIN" "$BASE/api/migrate-drive.mjs" "$DATA_FILE" "$DRIVE_CONFIG" "$TOKEN_FILE" "$DRIVE_FILE" 2>&1)"; then
   printf '%s\n' "$migration_output" >&2
   restore_server
   echo "Atualização interrompida. Backup preservado em: $BACKUP" >&2
