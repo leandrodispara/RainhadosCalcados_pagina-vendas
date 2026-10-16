@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#151410">
+  <title>Rainha dos Calçados | Calçados e perfumes em Umuarama</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23c99a37'/%3E%3Ctext x='6' y='25' font-family='Georgia' font-size='27' fill='white'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/rainha-ux.css">
+</head>
+<body class="rainha-editorial">
+  <div class="editorial-topbar"><span>✦ Atendimento personalizado · Umuarama e região</span><a href="/cliente/">Área do colaborador</a></div>
+
+  <header class="editorial-header">
+    <a href="/" class="editorial-brand" aria-label="Rainha dos Calçados — início">
+      <span class="editorial-brand-mark">R</span>
+      <span>Rainha dos Calçados<small>CALÇADOS &amp; PERFUMARIA</small></span>
+    </a>
+    <nav class="editorial-nav" aria-label="Navegação principal">
+      <a href="#catalogo" data-department="all">Novidades</a>
+      <a href="#catalogo" data-department="feminino">Feminino</a>
+      <a href="#catalogo" data-department="masculino">Masculino</a>
+      <a href="#perfumes" data-department="perfumes">Perfumes árabes</a>
+      <a href="#contato">Nossa loja</a>
+    </nav>
+    <a class="editorial-contact" href="https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento." target="_blank" rel="noopener">◯&nbsp; Fale conosco</a>
+  </header>
+
+  <main class="editorial-main">
+    <section id="main-banner" class="editorial-hero" aria-label="Destaques da Rainha dos Calçados">
+      <div class="editorial-hero-fallback">
+        <img src="/assets/editorial.webp" alt="Seleção de calçados e perfumes Rainha dos Calçados">
+        <div class="editorial-hero-shade"></div>
+        <div class="editorial-hero-copy">
+          <p class="editorial-eyebrow">✦ Seu estilo merece reinar</p>
+          <h1>Presença que começa <em>nos detalhes.</em></h1>
+          <p class="editorial-lead">Calçados escolhidos para transformar o seu caminhar e perfumes árabes que deixam uma assinatura inesquecível.</p>
+          <div class="editorial-actions"><a class="editorial-button gold" href="#catalogo">Descobrir novidades <span>→</span></a><a class="editorial-button ghost" href="https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento." target="_blank" rel="noopener">◯&nbsp; Comprar pelo WhatsApp</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="promotion" class="editorial-promotion" aria-label="Promoções da loja" hidden></section>
+
+    <section class="editorial-catalog" id="catalogo" aria-labelledby="catalog-title">
+      <div class="editorial-section-heading">
+        <div><p class="editorial-kicker">Vitrine selecionada</p><h2 id="catalog-title">Encontre o seu próximo favorito</h2></div>
+        <div class="editorial-filterbar" aria-label="Filtrar a vitrine">
+          <button data-department="all" aria-pressed="true">Todos</button>
+          <button data-department="feminino" aria-pressed="false">Feminino</button>
+          <button data-department="masculino" aria-pressed="false">Masculino</button>
+          <button data-department="perfumes" aria-pressed="false">Perfumes</button>
+        </div>
+      </div>
+      <p class="editorial-count" id="count" role="status"></p>
+      <div id="products" class="editorial-products" aria-live="polite"><p class="editorial-empty">Carregando a vitrine…</p></div>
+    </section>
+
+    <section class="editorial-collections" aria-label="Coleções em destaque">
+      <article class="editorial-collection feminine" id="collection-feminine">
+        <div class="editorial-collection-copy"><p>COLEÇÃO FEMININA</p><h2>Para chegar e ser notada.</h2><button type="button" data-department="feminino">Ver coleção <span>→</span></button></div>
+      </article>
+      <article class="editorial-collection masculine" id="collection-masculine">
+        <div class="editorial-collection-copy"><p>COLEÇÃO MASCULINA</p><h2>Para quem deixa sua marca.</h2><button type="button" data-department="masculino">Ver coleção <span>→</span></button></div>
+      </article>
+    </section>
+
+    <section class="editorial-perfumes" id="perfumes" aria-labelledby="perfume-heading">
+      <div class="editorial-perfume-photo"><img id="perfume-story-image" src="/assets/editorial.webp" alt="Perfumes árabes selecionados"><span>ESSÊNCIAS SELECIONADAS</span></div>
+      <div class="editorial-perfume-copy"><p class="editorial-kicker">PERFUMES ÁRABES</p><h2 id="perfume-heading">Um aroma que fala antes mesmo de você.</h2><p>Descubra fragrâncias intensas, sofisticadas e de alta fixação. Nossa curadoria reúne perfumes femininos, masculinos e compartilháveis para cada personalidade.</p><ul><li>Oud marcante</li><li>Florais raros</li><li>Alta fixação</li></ul><button type="button" class="editorial-button gold" data-department="perfumes">Quero encontrar meu perfume <span>→</span></button></div>
+    </section>
+
+    <section class="editorial-consultation" aria-labelledby="consultation-heading">
+      <p class="editorial-kicker">CONSULTORIA EXPRESS</p><h2 id="consultation-heading">Qual essência combina com você?</h2><p>Escolha o que você deseja transmitir e nós preparamos sugestões especiais.</p>
+      <div class="editorial-essence-options"><button type="button" data-department="perfumes">Presença marcante</button><button type="button" data-department="perfumes">Elegância suave</button><button type="button" data-department="perfumes">Mistério envolvente</button></div>
+    </section>
+
+    <section class="editorial-cta" id="contato"><div><p>ATENDIMENTO DE VERDADE</p><h2>Seu próximo favorito está aqui.</h2></div><a href="https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento." target="_blank" rel="noopener">Chamar no WhatsApp <span>→</span></a></section>
+  </main>
+
+  <footer class="editorial-footer">
+    <div class="editorial-footer-grid">
+      <div class="editorial-footer-brand"><a href="/" class="editorial-brand"><span class="editorial-brand-mark">R</span><span>Rainha dos Calçados<small>ESTILO QUE COROA VOCÊ</small></span></a><p>Calçados femininos e masculinos, além de uma seleção especial de perfumes árabes.</p></div>
+      <div><h3>Visite</h3><p>Praça Arthur Thomas<br>Umuarama — Paraná</p></div>
+      <div><h3>Fale conosco</h3><p><a href="tel:+554436226512">(44) 3622-6512</a><br><a href="https://wa.me/5544999087669" target="_blank" rel="noopener">Atendimento pelo WhatsApp</a></p></div>
+    </div>
+    <div class="editorial-copyright">© 2026 Rainha dos Calçados</div>
+  </footer>
+  <a class="editorial-whatsapp" href="https://wa.me/5544999087669?text=Ol%C3%A1%21%20Gostaria%20de%20atendimento." target="_blank" rel="noopener">◯&nbsp; Posso ajudar?</a>
+  <script src="/assets/storefront.js" defer></script>
+</body>
+</html>
