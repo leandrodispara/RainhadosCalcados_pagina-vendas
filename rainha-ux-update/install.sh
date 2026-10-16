@@ -62,7 +62,14 @@ if [[ "$ready" -ne 1 ]]; then
   exit 1
 fi
 
-curl --fail --silent --show-error --max-time 10 http://127.0.0.1:3187/api/catalog >/dev/null
+if ! curl --fail --silent --show-error --max-time 10 http://127.0.0.1:3187/api/catalog >/dev/null; then
+  echo "A nova API não respondeu ao catálogo. Restaurando o servidor anterior…" >&2
+  install -Dm644 "$BACKUP/api/server.mjs" "$API_DIR/server.mjs"
+  [[ -f "$BACKUP/data/catalog.json" ]] && cp -a "$BACKUP/data/catalog.json" "$DATA_FILE"
+  systemctl restart rainha-catalogo.service || true
+  echo "Atualização interrompida. Backup preservado em: $BACKUP" >&2
+  exit 1
+fi
 echo
 echo "Atualização concluída."
 echo "Backup: $BACKUP"
