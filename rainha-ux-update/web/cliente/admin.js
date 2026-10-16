@@ -26,7 +26,7 @@ function adopt(data){
   ...data,
   products:Array.isArray(data.products)?data.products:[],
   banners:{
-   highlights:(Array.isArray(banners.highlights)?banners.highlights:fallbackMain).slice(0,3).map(item=>({...blankHighlight(),...item})),
+   highlights:(Array.isArray(banners.highlights)?banners.highlights:fallbackMain).slice(0,4).map(item=>({...blankHighlight(),...item})),
    promotion:{...blankBanner(),...(banners.promotion||data.banner||{})}
   }
  };
@@ -112,7 +112,7 @@ function fillBannerEditor(banner){
 function renderHighlights(){
  const root=$('highlights-list');root.replaceChildren();
  const items=highlights();
- $('new-highlight').disabled=items.length>=3;
+ $('new-highlight').disabled=items.length>=4;
  if(!items.length){
   root.append(el('p','empty','Nenhum destaque cadastrado. Adicione o primeiro banner para recepcionar quem entra na loja.'));
  }else{
@@ -131,11 +131,12 @@ function renderHighlights(){
    actions.append(edit,remove);card.append(preview,details,actions);root.append(card);
   });
  }
- $('highlights-help').textContent=items.length+'/3 destaque(s) cadastrado(s). Eles aparecem no carrossel na ordem mostrada acima.';
+ $('highlights-help').textContent=items.length+'/4 destaque(s) cadastrados. Eles aparecem no carrossel na ordem mostrada acima.';
 }
 
 function showHighlightEditor(item=null){
  bannerArea='highlights';
+ $('banner-form').dataset.bannerArea='highlights';
  editingHighlightId=item?.id||'';
  fillBannerEditor(item||{...blankBanner(),active:true});
  $('banner-editor-panel').hidden=false;
@@ -156,12 +157,12 @@ function openHighlight(id){
 }
 
 function startHighlight(){
- if(highlights().length>=3){message('Use no máximo três destaques na página inicial.',true);return;}
+ if(highlights().length>=4){message('Use no máximo quatro destaques na página inicial.',true);return;}
  showHighlightEditor();
 }
 
 function loadPromotion(){
- bannerArea='promotion';editingHighlightId='';
+ bannerArea='promotion';$('banner-form').dataset.bannerArea='promotion';editingHighlightId='';
  const banner=state.banners.promotion||blankBanner();
  fillBannerEditor(banner);
  $('banner-editor-panel').hidden=false;
@@ -177,6 +178,7 @@ function loadPromotion(){
 
 function selectBannerArea(area){
  bannerArea=area;
+ $('banner-form').dataset.bannerArea=area;
  document.querySelectorAll('[data-banner-area]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.bannerArea===area)));
  const highlightsArea=area==='highlights';
  $('highlights-panel').hidden=!highlightsArea;
