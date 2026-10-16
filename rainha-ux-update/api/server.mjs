@@ -60,6 +60,8 @@ export async function optimize(bytes,kind){
 const storedBanner=value=>({title:typeof value?.title==='string'?value.title.slice(0,160):'',image:mediaId(value?.image)?value.image:'',link:typeof value?.link==='string'?value.link.slice(0,1000):'',active:value?.active===true});
 const storedHighlight=value=>({id:typeof value?.id==='string'&&/^[a-f0-9-]{36}$/i.test(value.id)?value.id:randomUUID(),...storedBanner(value)});
 const storedHighlights=value=>Array.isArray(value)?value.slice(0,4).map(storedHighlight).filter(item=>item.image||item.title||item.link||item.active):[];
+const misplacedPromotionImage='/media/8831076f-4a98-4991-a984-b55f1e8e6fe4.webp';
+const unknownLegacyPromotionImage='/media/b57be92e-3ec9-4ee8-9358-2a155a1809f8.webp';
 function normalizeData(input){
  const before=JSON.stringify(input);
  if(!Number.isInteger(input.revision))input.revision=0;
@@ -71,6 +73,15 @@ function normalizeData(input){
  if(!highlights.length&&source.main)highlights.push(storedHighlight(source.main));
  input.banners={highlights,promotion:storedBanner(source.promotion||legacy)};
  input.banner=input.banners.promotion;
+  // Corrige somente a combinação legada que colocou a promoção Black Friday no destaque
+  // e uma imagem de demonstração na promoção fixa. As imagens continuam no armazenamento.
+  const firstHighlight=input.banners.highlights[0];
+  if(firstHighlight?.image===misplacedPromotionImage&&input.banners.promotion.image===unknownLegacyPromotionImage){
+   input.banners.highlights=input.banners.highlights.slice(1);
+   input.banners.promotion={title:firstHighlight.title,image:firstHighlight.image,link:firstHighlight.link,active:true};
+   input.banner=input.banners.promotion;
+   input.revision++;
+  }
  input.products=input.products.map(product=>{
   if(!product||typeof product!=='object')return product;
   const raw=productImages(product).filter(mediaId).slice(0,8);
@@ -148,13 +159,23 @@ export async function createApp({dataDir,secret,storage=null,origin='https://cal
      }finally{processingImages--;}
     }
     const slotMatch=path.match(/^\/cliente\/api\/banners\/(main|promotion)$/);
+    const promoteMatch=path.match(/^\/cliente\/api\/banners\/highlights\/([a-f0-9-]{36})\/promotion$/i);
     const highlightsUpdate=req.method==='PUT'&&path==='/cliente/api/banners/highlights';
     const bannerUpdate=req.method==='PUT'&&(path==='/cliente/api/banner'||slotMatch);
-    if((path==='/cliente/api/products'&&req.method==='POST')||bannerUpdate||highlightsUpdate||(path.startsWith('/cliente/api/products/')&&req.method==='DELETE')){
-     const input=req.method==='DELETE'?null:await decode(req);
+    const promoteHighlight=req.method==='POST'&&!!promoteMatch;
+    if((path==='/cliente/api/products'&&req.method==='POST')||bannerUpdate||highlightsUpdate||promoteHighlight||(path.startsWith('/cliente/api/products/')&&req.method==='DELETE')){
+     const input=req.method==='DELETE'||promoteHighlight?null:await decode(req);
      await mutate(draft=>{
       if(req.headers['if-match']!==String(draft.revision))throw new Problem('O catálogo mudou em outra tela. Recarregue a página antes de salvar.',409);
       if(req.method==='DELETE'){const id=path.split('/').at(-1);if(!draft.products.some(p=>p.id===id))throw new Problem('Produto não encontrado.',404);draft.products=draft.products.filter(p=>p.id!==id);}
+      else if(promoteHighlight){
+       const index=draft.banners.highlights.findIndex(item=>item.id===promoteMatch[1]);
+       if(index<0)throw new Problem('Destaque não encontrado.',404);
+       const highlight=draft.banners.highlights[index];
+       if(!highlight.image)throw new Problem('Este destaque não tem imagem para usar como promoção.');
+       draft.banners.promotion={title:highlight.title,image:highlight.image,link:highlight.link,active:true};
+       draft.banners.highlights.splice(index,1);
+      }
       else if(highlightsUpdate){const highlights=validateHighlights(input.highlights);highlights.forEach(highlight=>knownImage(highlight.image,draft));draft.banners.highlights=highlights;}
       else if(bannerUpdate){
        const slot=slotMatch?.[1]||'promotion';const banner=validateBanner(input);knownImage(banner.image,draft);
