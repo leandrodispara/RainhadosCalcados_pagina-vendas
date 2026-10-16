@@ -69,7 +69,7 @@ function normalizeData(input){
  const legacyMain=storedBanner(source.main);
  const candidates=Array.isArray(source.highlights)&&source.highlights.length?source.highlights:(legacyMain.title||legacyMain.image||legacyMain.link||legacyMain.active?[source.main]:[]);
  const highlights=[],ids=new Set();
- for(const value of candidates.slice(0,3)){
+ for(const value of candidates.slice(0,4)){
   const banner=storedBanner(value);
   if(!banner.title&&!banner.image&&!banner.link&&!banner.active)continue;
   let id=highlightId(value?.id)?value.id:randomUUID();
@@ -205,7 +205,7 @@ export async function createApp({dataDir,secret,storage=null,origin='https://cal
        if(index<0)throw new Problem('Destaque não encontrado.',404);
        draft.banners.highlights.splice(index,1);
       }else if(highlightCreate){
-       if(draft.banners.highlights.length>=3)throw new Problem('Use no máximo três destaques na página inicial.');
+       if(draft.banners.highlights.length>=4)throw new Problem('Use no máximo quatro destaques na página inicial.');
        const banner=validateBanner(input);knownImage(banner.image,draft);
        draft.banners.highlights.push({id:randomUUID(),...banner});
       }else if(highlightUpdate){
