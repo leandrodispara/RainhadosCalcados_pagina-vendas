@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Área do colaborador · Rainha dos Calçados</title>
   <link rel="stylesheet" href="/assets/style.css">
-  <link rel="stylesheet" href="/assets/rainha-ux.css">
+  <link rel="stylesheet" href="/assets/rainha-ux.css?v=20261016-v7">
 </head>
 <body class="admin-body rainha-admin">
   <header class="admin-top"><a class="brand" href="/"><span class="r">R</span><span>Rainha dos Calçados<small>ÁREA DO COLABORADOR</small></span></a><a class="btn secondary" href="/" target="_blank" rel="noopener">Ver site ↗</a></header>
@@ -30,7 +30,7 @@
       <p class="admin-banner" id="connection" role="status">Conectando ao catálogo…</p>
 
       <form class="panel" id="editor">
-        <fieldset id="product-fields" disabled>
+        <fieldset id="product-fields">
           <div class="admin-toolbar"><h2 id="editor-title">Novo produto</h2><label class="check"><input type="checkbox" id="active" checked> Mostrar na vitrine</label></div>
           <div class="form-grid">
             <label class="field">Nome do produto<input id="name" required maxlength="120"></label>
@@ -46,12 +46,12 @@
       </form>
 
       <form class="panel" id="banner-form" hidden>
-        <fieldset id="banner-fields" disabled>
+        <fieldset id="banner-fields">
           <h2 class="admin-banner-title">Home: destaques e promoção</h2>
-          <p class="banner-kind-note">Estas áreas são independentes: os destaques aparecem no topo da página; a promoção é um bloco fixo logo abaixo, sempre inteiro e sem sobreposição.</p>
+          <p class="banner-kind-note">Estas áreas são independentes: a promoção fixa aparece logo depois das boas-vindas; os destaques vêm depois dela. Nenhuma imagem recebe texto por cima.</p>
           <div class="banner-area-tabs" aria-label="Escolher área da página inicial">
-            <button type="button" data-banner-area="highlights" aria-pressed="true">Destaques de recepção <small>Carrossel com até 4 imagens removíveis.</small></button>
-            <button type="button" data-banner-area="promotion" aria-pressed="false">Promoção fixa <small>Um único banner, exibido por completo abaixo dos destaques.</small></button>
+            <button type="button" data-banner-area="highlights" aria-pressed="true">Destaques da loja <small>Carrossel opcional com até 4 imagens removíveis, após a promoção.</small></button>
+            <button type="button" data-banner-area="promotion" aria-pressed="false">Promoção fixa <small>Um único banner, exibido por completo logo após as boas-vindas.</small></button>
           </div>
 
           <section class="highlight-manager" id="highlight-manager">
@@ -74,6 +74,6 @@
       </form>
     </section>
   </main>
-  <script src="/cliente/admin.js" defer></script>
+  <script src="/cliente/admin.js?v=20261016-v7" defer></script>
 </body>
 </html>
