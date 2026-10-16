@@ -1,37 +1,24 @@
-# Atualização de banners · Rainha dos Calçados
+# Atualização editorial — Rainha dos Calçados
 
-Esta versão corrige o fluxo visual da página inicial e separa definitivamente os dois espaços:
+Esta versão reconstrói a página inicial como uma vitrine editorial, inspirada na referência aprovada:
 
-1. **Destaques da página inicial**: carrossel com até **4 banners removíveis**. O antigo banner principal é migrado automaticamente para o primeiro destaque.
-2. **Banner fixo de promoções**: continua independente, abaixo dos destaques, sem sobreposição, em um bloco próprio e com a imagem exibida inteira.
+- Cabeçalho premium, hero com chamada e botão de atendimento.
+- Carrossel de **até 4 destaques** de recepção, todos editáveis, ordenáveis e removíveis no painel.
+- **Promoção fixa independente**, imediatamente abaixo dos destaques. A imagem é exibida inteira, sem corte e sem sobreposição.
+- Vitrine com filtros, cards de produto, coleções feminina e masculina e área dedicada aos perfumes árabes.
+- Rodapé e chamada de WhatsApp coerentes com o novo layout.
 
-## O que muda no painel
+## Painel do colaborador
 
-Em **Banners da página inicial** existem duas abas:
+Em **Home: destaques e promoção** há duas abas:
 
-- **Destaques da página inicial**: adicionar, editar, ocultar ou excluir até quatro banners.
-- **Banner fixo de promoções**: cadastrar um único banner promocional separado.
+1. **Destaques de recepção** — adicione até quatro imagens horizontais, altere a ordem ou remova cada uma.
+2. **Promoção fixa** — envie um único banner promocional; ele nunca entra no carrossel e é mostrado completo abaixo dele.
 
-Os arquivos enviados ao Google Drive continuam sendo usados normalmente. Nenhuma imagem existente é apagada pela atualização.
+O título de cada imagem é opcional. Basta imagem + a opção **Exibir esta imagem no site** marcada para publicar.
 
-## Instalação no servidor
+## Instalação
 
-1. Envie a pasta \`rainha-ux-update\` desta atualização para \`/root/\`.
-2. Execute como root:
+Envie o arquivo compactado para `/root/` e execute o instalador contido nesta pasta. Ele valida os arquivos, cria uma cópia em `/var/backups/`, aguarda a API responder e restaura o servidor anterior se a inicialização falhar.
 
-~~~bash
-cd /root/rainha-ux-update
-bash -n install.sh && bash install.sh
-~~~
-
-O instalador:
-
-- cria uma cópia de segurança em \`/var/backups/\`;
-- valida os JavaScripts;
-- aguarda a API responder antes de concluir;
-- restaura API, painel, vitrine e catálogo caso a API não inicie.
-
-Depois, atualize a página com **Ctrl+F5** e entre em:
-
-- https://calcadosrainha.com.br/
-- https://calcadosrainha.com.br/cliente/
+Depois da instalação, atualize a home com `Ctrl+F5` e abra `/cliente/` para administrar os destaques e a promoção.
