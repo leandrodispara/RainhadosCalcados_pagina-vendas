@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Área do colaborador · Rainha dos Calçados</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/rainha-ux.css">
+</head>
+<body class="admin-body">
+  <header class="admin-top"><a class="brand" href="/"><span class="r">R</span><span>Rainha dos Calçados<small>ÁREA DO COLABORADOR</small></span></a><a class="btn secondary" href="/" target="_blank" rel="noopener">Ver site ↗</a></header>
+  <main class="admin-layout">
+    <aside class="panel admin-sidebar">
+      <h2>Gerenciar</h2>
+      <div class="management-tabs" aria-label="Área de cadastro">
+        <button class="pill" data-tab="Calçados" data-audience="Feminino" aria-pressed="true">Calçados femininos</button>
+        <button class="pill" data-tab="Calçados" data-audience="Masculino" aria-pressed="false">Calçados masculinos</button>
+        <button class="pill" data-tab="Perfumes" data-audience="Feminino" aria-pressed="false">Perfumes femininos</button>
+        <button class="pill" data-tab="Perfumes" data-audience="Masculino" aria-pressed="false">Perfumes masculinos</button>
+        <button class="pill" data-tab="banners" aria-pressed="false">Banners da página inicial<small>Destaques e promoções</small></button>
+      </div>
+      <button class="btn" id="new" disabled>+ Cadastrar produto</button>
+      <p class="small muted" id="total"></p><div class="admin-list" id="list"></div>
+      <div class="utility"><button id="export" disabled>Baixar cópia do catálogo</button><button id="import" disabled>Recuperar cadastro antigo</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
+      <p class="admin-bottom">Cada produto pode ter até 8 fotos. Os valores aparecem somente na página de detalhes; as compras seguem pelo WhatsApp.</p>
+    </aside>
+
+    <section>
+      <div class="admin-toolbar"><h1 id="heading">Cadastro de calçados femininos</h1></div>
+      <button class="btn secondary" id="connect-drive" type="button" hidden>Conectar Google Drive</button>
+      <p class="admin-banner" id="connection" role="status">Conectando ao catálogo…</p>
+
+      <form class="panel" id="editor">
+        <fieldset id="product-fields" disabled>
+          <div class="admin-toolbar"><h2 id="editor-title">Novo produto</h2><label class="check"><input type="checkbox" id="active" checked> Mostrar na vitrine</label></div>
+          <div class="form-grid">
+            <label class="field">Nome do produto<input id="name" required maxlength="120"></label>
+            <label class="field">Marca<input id="brand" maxlength="80"></label>
+            <label class="field audience-choice" id="audience-field">Público do produto<select id="audience"><option>Feminino</option><option>Masculino</option></select><small>Define em qual departamento o produto aparecerá.</small></label>
+            <label class="field">Preço principal (R$)<input id="price" type="number" min="0.01" max="999999" step="0.01" inputmode="decimal"><small>Em branco: “Consulte o valor”.</small></label>
+            <label class="field wide">Descrição<textarea id="description" maxlength="1500"></textarea></label>
+            <label class="field wide">Fotos do produto<input id="photos" type="file" multiple accept="image/jpeg,image/png,image/webp"><small>Selecione uma ou várias fotos. Limite de 8 fotos e 10 MB por arquivo; a otimização é automática.</small><div id="photo-previews" class="photo-grid" aria-live="polite"></div><p id="photo-help" class="photo-help">Seleciona uma ou mais fotos. A primeira será a capa da vitrine.</p></label>
+          </div>
+          <section class="section-divider"><h3 id="variant-title">Cores, numerações e quantidades</h3><p>Cadastre cada opção. Quantidade zero indica indisponibilidade. O preço da opção substitui o preço principal na tela de detalhes.</p><div id="variants"></div><button class="btn secondary" type="button" id="add-variant">+ Adicionar variação</button></section>
+          <div class="savebar"><button class="btn" type="submit" id="save">Publicar produto</button><button class="remove" id="delete" type="button" hidden>Excluir produto</button><span class="status" id="status" role="status"></span></div>
+        </fieldset>
+      </form>
+
+      <form class="panel" id="banner-form" hidden>
+        <fieldset id="banner-fields" disabled>
+          <h2 class="admin-banner-title">Banners da página inicial</h2>
+          <p class="banner-kind-note">Os destaques aparecem em carrossel no topo. O banner de promoções é independente, fica logo abaixo e não se sobrepõe aos destaques.</p>
+
+          <div class="banner-area-tabs" aria-label="Gerenciar banners">
+            <button class="pill" type="button" data-banner-area="highlights" aria-pressed="true">Destaques da página inicial<small>Até 3 banners removíveis</small></button>
+            <button class="pill" type="button" data-banner-area="promotion" aria-pressed="false">Banner fixo de promoções<small>Exibido abaixo dos destaques</small></button>
+          </div>
+
+          <section class="highlight-manager" id="highlights-panel">
+            <div class="highlights-toolbar">
+              <div><h3>Destaques da página inicial</h3><p>Cadastre até três banners para recepcionar o cliente e apresentar produtos, novidades ou campanhas.</p></div>
+              <button class="btn secondary" type="button" id="new-highlight">+ Adicionar destaque</button>
+            </div>
+            <div class="highlight-list" id="highlights-list" aria-live="polite"></div>
+            <p class="photo-help" id="highlights-help"></p>
+          </section>
+
+          <section class="banner-editor-panel" id="banner-editor-panel" hidden>
+            <div class="section-divider">
+              <h3 id="banner-heading">Adicionar destaque</h3>
+              <p class="banner-kind-note" id="banner-description"></p>
+              <div class="form-grid">
+                <label class="field wide">Título / descrição<input id="banner-title" maxlength="160" placeholder="Ex.: Novidades da Rainha"></label>
+                <label class="field wide">Imagem do banner<input id="banner-photo" type="file" accept="image/jpeg,image/png,image/webp"><small id="banner-photo-help">Use imagem horizontal de aproximadamente 1600 × 500 px.</small><img id="banner-preview" class="banner-preview" alt="Prévia do banner" hidden></label>
+                <label class="field wide">Link ao clicar no banner (opcional)<input id="banner-link" placeholder="https://wa.me/5544999087669"><small>Pode direcionar para o WhatsApp ou uma página do site.</small></label>
+                <label class="check wide"><input id="banner-active" type="checkbox"> Exibir este banner no site</label>
+              </div>
+            </div>
+            <div class="savebar"><button class="btn" type="submit" id="banner-save">Salvar destaque</button><button class="btn secondary" type="button" id="banner-cancel">Cancelar</button><button class="remove" id="banner-remove" type="button" hidden>Excluir destaque</button><span class="status" id="banner-status" role="status"></span></div>
+          </section>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+  <script src="/cliente/admin.js" defer></script>
+</body>
+</html>
