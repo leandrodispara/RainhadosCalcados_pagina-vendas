@@ -1,8 +1,8 @@
 import {readFile,writeFile,rename} from 'node:fs/promises';
-import {driveStorage} from './drive.mjs';
+import {pathToFileURL} from 'node:url';
 
-const [catalogPath,configPath,tokenPath]=process.argv.slice(2);
-if(!catalogPath||!configPath||!tokenPath)throw Error('Uso: migrate-drive.mjs <catalogo> <configuração> <token>.');
+const [catalogPath,configPath,tokenPath,drivePath]=process.argv.slice(2);
+if(!catalogPath||!configPath||!tokenPath||!drivePath)throw Error('Uso: migrate-drive.mjs <catalogo> <configuração> <token> <módulo-drive>.');
 
 const mediaPath=value=>typeof value==='string'&&/^\/media\/[a-f0-9-]{36}\.webp$/i.test(value);
 const productImages=product=>Array.isArray(product?.images)&&product.images.length?product.images:(product?.image?[product.image]:[]);
@@ -38,6 +38,7 @@ if(data.storageFolderId===config.folderId){
  process.exit(0);
 }
 
+const {driveStorage}=await import(pathToFileURL(drivePath).href+'?migration='+Date.now());
 const storage=await driveStorage({config,tokenPath});
 if(!storage||(typeof storage.ready==='function'&&!storage.ready()))throw Error('A conexão atual com o Google Drive não está pronta. Confirme o compartilhamento temporário da pasta nova.');
 
